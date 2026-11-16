@@ -4,7 +4,7 @@ description: Design, generate, validate, and deliver consistent game-character a
 license: MIT
 metadata:
   author: kelicblan
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Game Character Action — independent animation skill
@@ -21,10 +21,26 @@ You turn a character reference (image, layered file, rig, description, or existi
 6. **Do not equate frames with timing.** Set timings in milliseconds, author distinct pose holds, hitstop, hitstun, recovery locks, cancel windows, and root motion. Eight equal frames are not a default.
 7. **Preview honestly.** Label outputs as concept, motion draft, asset draft, or engine-verified. A montage, GIF, fake loop, or single image is not an engine-ready sprite sheet or skeleton.
 8. **Keep source skill clean.** All user art, generated frames, sprite sheets, GIFs, videos, models, build outputs, and private assets belong in the target game workspace, **never in this skill repository**.
+9. **Default to actual image generation, not just advice.** If the user requests character animation frames/assets and this Agent session has an image-generation capability, directly invoke that available image-generation tool or native image-output capability. Do not stop at a prose action plan or ask permission for every pose. Read [references/host-native-image-generation.md](references/host-native-image-generation.md) first.
+10. **Use the invoking environment's image capability.** Do not bind this Skill to a vendor, model name, API key, hosted endpoint, or another Skill. A text-only calling model is not necessarily an image generator: invoke a separately exposed image tool when available; if neither exists, state the exact capability gap without claiming images were generated.
 
 ## When triggered
 
 Use on requests to animate characters, design movement personality, create action frames, study hit reactions, build a motion library, export game animation, or fix unnatural idle/walk/attack/hit feedback. Support 2D frame animation, 2D cutout/skeletal animation, hybrid 2D, and 3D rigs. Choose an approach justified by required silhouette change and available tools.
+
+## Image-generation execution policy (mandatory for frame/image requests)
+
+This Skill is an **agent procedure**, not a hard-coded image API client. On requests such as "给这张角色图生成待机/移动/攻击/受击多帧图", **execution, not just planning, is the default**.
+
+- Discover the current host Agent's supported native image-output or image-generation tools, and choose the available image-capable tool. The calling language model may act as an orchestrator rather than the image-rendering model.
+- Use the user's approved design as the reference for every generation/edit pass. Call the tool directly with a clear action card, consistent identity constraints, concrete poses/sequence, camera, framing and output contract.
+- Generate a small group of identity-locked key poses, check it, then generate or edit missing in-betweens. Produce per-frame assets or a uniformly gridded sheet **only as supported by the tool**. When the host supports animation/GIF output, use it as a preview in addition to real production assets.
+- Inspect the actual frames; reject mismatches and retry by editing bad poses with the reference. Do not present a hallucinated contact sheet, GIF, or unverified frames as import-ready animation.
+- Once acceptable, assemble a real sprite sequence/sheet with metadata and offer an in-chat playback/visualization when the host supports it; otherwise provide a verified file path or state the preview limitation.
+- **Only if no image-capable function is exposed**: record that generation is blocked; supply an actionable generation plan or interoperable requests for the user's configured generator. Do not silently switch to text-only completion, fabricate calls, or force a particular image model.
+- Respect host tool approval/cost constraints; never bypass required permissions.
+
+**Detailed tool selection, fallback, iterative prompting, validation and deliverables:** [references/host-native-image-generation.md](references/host-native-image-generation.md).
 
 ## Workflow
 
@@ -58,8 +74,10 @@ Read [references/hit-reaction-system.md](references/hit-reaction-system.md) **fo
 - Direction and severity change pose **and** game position when authorized. Separate cosmetic flinch from stagger/knockback.
 - `templates/hit-reaction.json` is an illustrative decision entry, not a universal physical law.
 
-### 5. Build coherent source assets and animation
-Read [references/production-and-consistency.md](references/production-and-consistency.md).
+### 5. Automatically invoke the available image generator and build animation assets
+Read [references/host-native-image-generation.md](references/host-native-image-generation.md) and [references/production-and-consistency.md](references/production-and-consistency.md).
+
+**When the user requests images, the Agent must call its image-generation capability now** (subject to current host access and permissions); this step is not merely a specification. Prefer the invoking Agent's already available tool rather than a separately configured remote model.
 - Choose frame-by-frame, cutout/skeletal, hybrid, or 3D according to motion requirements.
 - Create character identity sheet, key poses, intermediate motion, transparent/correctly anchored sprites or rig, contacts/offsets, and secondary motion. Reveal/paint occluded body parts before deforming a static drawing.
 - Keep ground registration and roots consistent. No hidden spatial changes from frame resizing or inconsistent cropping.
@@ -99,6 +117,7 @@ Return a concise summary with: character profile, action list and movement ratio
 | `references/timing-and-states.md` | Actions, loops, combos, timing |
 | `references/hit-reaction-system.md` | Any impact or stagger task |
 | `references/production-and-consistency.md` | Image/rig production, AI-generated frames |
+| `references/host-native-image-generation.md` | Mandatory auto image generation for image/frame requests; tool dispatch, retries, fallback |
 | `references/integration-and-qa.md` | Export, preview, engine, QA |
 | `templates/character-profile.json` | New character |
 | `templates/action-card.json` | New action/timeline |
