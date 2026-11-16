@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "character_id": "example-humanoid",
+  "source": {
+    "kind": "reference_image",
+    "path": "project-assets/characters/example/source.png",
+    "revision": "replace-with-source-hash",
+    "inspected": false
+  },
+  "visual_identity": {
+    "silhouette": "compact upright humanoid",
+    "face": "describe verified face only",
+    "forbidden_changes": [
+      "new facial hair",
+      "changed limb count",
+      "missing costume attachments"
+    ],
+    "proportions": "preserve source body proportions",
+    "view": "three_quarter_right",
+    "asymmetry": "record any non-mirrored costume",
+    "costume_and_props": [
+      "replace with observed items"
+    ]
+  },
+  "biomechanics": {
+    "body_type": "humanoid",
+    "mass_feel": "medium",
+    "joint_stiffness": "stiff",
+    "support": "grounded_two_legs",
+    "locomotion": "short_shuffling_steps",
+    "center_of_mass": "over supporting feet",
+    "arms": "small swing",
+    "secondary_parts": [
+      "robe_hem"
+    ]
+  },
+  "production": {
+    "dimensionality": "2d",
+    "camera": "fixed_three_quarter",
+    "engine": "unspecified",
+    "screen_height_px": 140,
+    "pivot": "feet_center",
+    "assets_location": "external game project"
+  },
+  "verification": {
+    "input_inspected": false,
+    "identity_reviewed": false
+  }
+}

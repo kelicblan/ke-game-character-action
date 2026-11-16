@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "rule_id": "humanoid_head_front_light_airborne",
+  "character_archetype": "light_hopper",
+  "match": {
+    "body_part": "head_front",
+    "impulse_direction": "opposite_incoming_front",
+    "intensity": "light",
+    "support": "airborne",
+    "phase": "flight"
+  },
+  "visual": {
+    "primary_pose": "head_recoil",
+    "follow_through": "neck_and_torso_follow",
+    "secondary": [
+      "talisman",
+      "hair",
+      "pendant"
+    ],
+    "hold_ms": 30
+  },
+  "gameplay": {
+    "interrupts_attack": true,
+    "hitstun_ms": 130,
+    "logic_root_motion": {
+      "kind": "modify_velocity",
+      "direction": "impulse",
+      "magnitude": "tune_from_attack_and_mass",
+      "collide_with_world": true
+    }
+  },
+  "recovery": {
+    "target": "landing_then_previous_locomotion",
+    "requires_floor_contact": true,
+    "notes": "inherit existing airborne trajectory; no forced second jump"
+  },
+  "qa": {
+    "distinct_from_abdomen": true,
+    "preserves_identity": false,
+    "tested_with_existing_velocity": false,
+    "tested_in_engine": false
+  }
+}

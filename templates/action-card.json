@@ -1,0 +1,140 @@
+{
+  "schema_version": "1.0",
+  "character_id": "example-humanoid",
+  "action_id": "attack_jab",
+  "type": "attack",
+  "loop": false,
+  "total_ms": 500,
+  "reference_fps": 60,
+  "phases": [
+    {
+      "name": "anticipation",
+      "start_ms": 0,
+      "end_ms": 100
+    },
+    {
+      "name": "acceleration",
+      "start_ms": 100,
+      "end_ms": 160
+    },
+    {
+      "name": "follow_through",
+      "start_ms": 160,
+      "end_ms": 220
+    },
+    {
+      "name": "pose_hold",
+      "start_ms": 220,
+      "end_ms": 280
+    },
+    {
+      "name": "recovery",
+      "start_ms": 280,
+      "end_ms": 460
+    },
+    {
+      "name": "settle",
+      "start_ms": 460,
+      "end_ms": 500
+    }
+  ],
+  "key_poses": [
+    {
+      "at_ms": 0,
+      "pose": "ready",
+      "intent": "ready and balanced"
+    },
+    {
+      "at_ms": 90,
+      "pose": "windup",
+      "intent": "stored force"
+    },
+    {
+      "at_ms": 130,
+      "pose": "contact",
+      "intent": "clearly readable impact silhouette"
+    },
+    {
+      "at_ms": 160,
+      "pose": "thrust_end",
+      "intent": "follow through"
+    },
+    {
+      "at_ms": 210,
+      "pose": "extended",
+      "intent": "finish extension"
+    },
+    {
+      "at_ms": 260,
+      "pose": "held_extension",
+      "intent": "hold key silhouette"
+    },
+    {
+      "at_ms": 380,
+      "pose": "retract",
+      "intent": "return to support"
+    },
+    {
+      "at_ms": 470,
+      "pose": "near_idle",
+      "intent": "valid transition"
+    }
+  ],
+  "events": [
+    {
+      "type": "hit_window",
+      "start_ms": 130,
+      "end_ms": 160
+    },
+    {
+      "type": "cancel_window",
+      "start_ms": 280,
+      "end_ms": 400
+    },
+    {
+      "type": "move_unlock",
+      "at_ms": 460
+    }
+  ],
+  "feedback": {
+    "hitstop_ms": 35,
+    "hitstun_ms": 110,
+    "stagger_policy": "on_confirmed_hit_only"
+  },
+  "root_motion": {
+    "owner": "gameplay",
+    "space": "world",
+    "displacement": [
+      0,
+      0
+    ],
+    "notes": "real movement belongs to gameplay; visual pivot only decorates"
+  },
+  "visual": {
+    "kind": "sprite_sheet",
+    "path": "output/example-humanoid/attack_jab.png",
+    "columns": 4,
+    "rows": 2,
+    "frame_width": 256,
+    "frame_height": 256,
+    "frame_durations_ms": [
+      90,
+      40,
+      30,
+      50,
+      50,
+      110,
+      100,
+      30
+    ],
+    "pivot_normalized": [
+      0.5,
+      1
+    ]
+  },
+  "acceptance": {
+    "source_identity_verified": false,
+    "normal_speed_playback_verified": false,
+    "engine_import_verified": false
+  }
+}
