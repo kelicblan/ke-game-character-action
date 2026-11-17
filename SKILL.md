@@ -4,7 +4,7 @@ description: Design, generate, validate, and deliver consistent game-character a
 license: MIT
 metadata:
   author: kelicblan
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # Game Character Action — independent animation skill
@@ -27,6 +27,28 @@ You turn a character reference (image, layered file, rig, description, or existi
 ## When triggered
 
 Use on requests to animate characters, design movement personality, create action frames, study hit reactions, build a motion library, export game animation, or fix unnatural idle/walk/attack/hit feedback. Support 2D frame animation, 2D cutout/skeletal animation, hybrid 2D, and 3D rigs. Choose an approach justified by required silhouette change and available tools.
+
+## V2 automatic production — authoritative execution protocol
+
+For an actual character image → game-motion asset request, **use the real, executable Python `action_factory` package** in this repository. Do not stop at prompt manifest creation. Run the script from the repository root with Python 3.10+ and Pillow (`pip install -e .`). Generated character images and private assets **must stay in an external job folder**.
+
+The image generator is always the **current calling Agent's accessible image tool** (or its user-configured local generator command). No hardcoded image provider, credential, paid API, or dependency on another Skill.
+
+**AI host-tool mode** (the default when an image tool exists but is not exposed as a local command):
+
+1. Examine the actual character source, analyze body mass, gait, identity locks, hit zones, movement phase and timing. Create a version 2.0 action-plan JSON following `templates/action_plan_v2.example.json`. Include `character.id/identity/body_type/locomotion/view`, state poses, explicit `durations_ms`, `loop`, and hit context for `hurt*`.
+2. Execute `python -m action_factory init --source /path/character.png --plan /path/plan.json --job /path/job`.
+3. Repeatedly execute `python -m action_factory next --job /path/job`. For `status=ready`, pass the returned `prompt` **and actual `references` images** to the current host's image-generation/editing tool. Save its actual output as PNG at a real local path; for a generated grid, use `ingest-grid` with actual equal cell counts.
+4. Call `python -m action_factory ingest --job /path/job --state NAME --frame INDEX --image /real/generated.png`. If native alpha is unavailable, request the correct chroma background and use explicit `--chroma FF00FF` or `--chroma 00FF00`. Structural failures automatically become `rejected`.
+5. **Visually inspect the real frame** against the source and previous frames for face, costume, limb topology, contact, action silhouette and motion. Call `python -m action_factory review --job /path/job --state NAME --frame INDEX --pass` only when genuinely inspected and valid. Otherwise `--reject --issue '具体错误描述'`, then repeat `next` to regenerate that frame. Do not claim AI visual review occurred when it did not.
+6. After `next` says `complete`, run `python -m action_factory build --job /path/job`. Do not bypass visual acceptance to call the output game-ready. Only use `--draft` when a clearly labeled concept preview is acceptable.
+7. Deliver the actual generated `assets/sprite-sheet.png`, `assets/manifest.json`, `assets/qa-report.json`, `previews/动作预览.html`, and `cocos/` bundle, and record the highest gate actually verified.
+
+**Local executable generator mode**: if the user's environment exposes a permitted image model as a command, call `python -m action_factory run --job /path/job --generator '["python","image_generator.py","--prompt-file","{prompt_file}","--output","{output}"]' --reviewer '["python","vision_reviewer.py","--image","{image}","--review-output","{review_output}"]'`. `run` executes real generation, imports the returned files, records rejections, retries up to 3 times by default, and produces the same bundle. If no reviewer is supplied, the output is **draft** and must not be described as visually verified.
+
+The default Web interface is **Simplified Chinese** and embeds real atlas pixels in one self-contained HTML: 全部播放／全部暂停／全部重播／播放速度／上一帧／下一帧／进度拖动. A local HTML file is not a publicly hosted URL. Cocos Creator 3.8 receives a `Texture2D` atlas, `JsonAsset` metadata, and a TypeScript playback component; do not claim the engine was tested until it has actually run in the user's Cocos project.
+
+For troubleshooting and gates: [references/automated-production-v2.md](references/automated-production-v2.md). This V2 workflow takes precedence over older standalone preview/validator helper examples for *automatic production* requests. Older tools remain available for legacy action cards.
 
 ## Image-generation execution policy (mandatory for frame/image requests)
 
@@ -117,7 +139,8 @@ Return a concise summary with: character profile, action list and movement ratio
 | `references/timing-and-states.md` | Actions, loops, combos, timing |
 | `references/hit-reaction-system.md` | Any impact or stagger task |
 | `references/production-and-consistency.md` | Image/rig production, AI-generated frames |
-| `references/host-native-image-generation.md` | Mandatory auto image generation for image/frame requests; tool dispatch, retries, fallback |
+| `references/host-native-image-generation.md` | Host image tool dispatch and limitation checks |
+| `references/automated-production-v2.md` | V2 CLI pipeline, rerender protocol and Chinese Web + Cocos outputs |
 | `references/integration-and-qa.md` | Export, preview, engine, QA |
 | `templates/character-profile.json` | New character |
 | `templates/action-card.json` | New action/timeline |

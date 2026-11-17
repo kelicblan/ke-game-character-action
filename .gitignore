@@ -44,3 +44,15 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# User/project generated assets stay outside this public skill repository
+jobs/
+runs/
+work/
+incoming/
+previews/
+cocos/
+assets/
+*.egg-info/
+build/
+dist/

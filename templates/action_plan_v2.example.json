@@ -1,0 +1,42 @@
+{
+  "version": "2.0",
+  "character": {
+    "id": "demo_actor",
+    "identity": "遵照用户提供的角色原图：五官、服装、比例与主要道具不变",
+    "body_type": "中等体型、两脚支撑、关节偏僵硬",
+    "locomotion": "短步僵硬行走",
+    "view": "固定三分之四视角"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "loop": true,
+      "durations_ms": [350, 350, 350, 350],
+      "poses": ["安静站立，几乎不动", "手腕微动，身体轻微压低", "饰品缓慢回摆", "回到第一帧姿势"],
+      "motion_notes": "低幅度待机，完整循环，无迈步"
+    },
+    "move": {
+      "frames": 6,
+      "loop": true,
+      "durations_ms": [120, 120, 120, 120, 120, 120],
+      "poses": ["站稳准备迈脚", "左脚僵硬抬起", "左脚落地并移交重心", "身体稳住", "右脚僵硬抬起", "右脚落地恢复步态"],
+      "motion_notes": "脚接地，身体重心明确，手臂不自然大摆"
+    },
+    "attack": {
+      "frames": 5,
+      "loop": false,
+      "durations_ms": [130, 70, 80, 100, 180],
+      "poses": ["准备发力", "快速前伸攻击", "保持攻击接触姿势", "短暂余势停留", "收招并恢复待机"],
+      "motion_notes": "快出招、短停势、慢恢复；判定事件与帧数独立",
+      "events": [{"name": "attack_hit_window", "at_ms": 130}, {"name": "recover_start", "at_ms": 380}]
+    },
+    "hurt_head": {
+      "frames": 5,
+      "loop": false,
+      "durations_ms": [60, 90, 110, 140, 180],
+      "poses": ["当前步态衔接受击", "头部先后甩，肩颈滞后", "失衡时脚下补短步后退", "衣袍惯性甩动，身体找回支撑", "恢复正常站姿"],
+      "motion_notes": "头受击后后退，动作幅度与角色质量感相符",
+      "hit_context": {"part": "head", "impulse": "backward", "intensity": "light", "support": "grounded"}
+    }
+  }
+}

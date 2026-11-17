@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ke-game-character-action"
+version = "2.0.0"
+description = "Standalone character motion skill and automatic frame production pipeline"
+requires-python = ">=3.10"
+dependencies = ["Pillow>=10.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+ke-game-character-action = "action_factory.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["action_factory*"]

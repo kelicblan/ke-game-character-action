@@ -6,6 +6,66 @@
 
 > 本仓库只包含 SKILL 指令、技术说明、JSON 模板和小型辅助脚本；**不包含角色原图、历史生成图片、精灵图、GIF、视频或模型资产**。
 
+## V2.0 — 从一张角色原图到真实动作资源
+
+这次实现了**可执行的自动生产流水线**（`action_factory/` Python 包），不再只有提示词清单。包括按帧生成任务领取、宿主图片工具回填、真实透明通道或指定色键、逐帧状态记录、失败重绘、角色一致性审核入口、透明图集、**全中文单页 Web 动态预览**与 Cocos 3.8 运行时播放组件。
+
+**安装**（Python 3.10+，仅依赖 Pillow；整个 Skill 独立安装）：
+
+```bash
+pip install -e .
+python -m unittest discover -s tests -v
+```
+
+**方式一：使用调用这个 Skill 的 AI 图片工具（推荐）**。让 AI 先根据角色原图创建 `plan.json`（格式参考 `templates/action_plan_v2.example.json`），然后按任务队列调用它当前已有的图片生成工具：
+
+```bash
+python -m action_factory init --source /game/role.png --plan /game/plan.json --job /game/jobs/role1
+python -m action_factory next --job /game/jobs/role1
+# 宿主 AI 读取 next 返回的 prompt 与 references，实际调用图片工具生成帧图
+python -m action_factory ingest --job /game/jobs/role1 --state idle --frame 0 --image /game/generated/frame.png
+# AI 实际检查了身份、姿势、运动连续性后标记（不通过则 --reject --issue 原因）
+python -m action_factory review --job /game/jobs/role1 --state idle --frame 0 --pass
+# 持续 next/生成/ingest/review，直到 status=complete
+python -m action_factory build --job /game/jobs/role1
+```
+
+模型输出的是均匀网格而非单帧时，可用 `ingest-grid --columns 4 --rows 2 --state idle` 切成独立帧，仍需逐帧审核。色键背景显式使用 `ingest --chroma FF00FF`。没有真实透明通道且未给色键时会拒绝图片，避免伪装透明。
+
+**方式二：一键调用本机已配置的图片生成命令**。图片工具和视觉审核器均由用户环境提供，不绑定 OpenAI、Grok、Claude 或固定 API：
+
+```bash
+python -m action_factory run --job /game/jobs/role1 \
+  --generator '["python","my_image_tool.py","--prompt-file","{prompt_file}","--out","{output}"]' \
+  --reviewer '["python","my_vision_review.py","--image","{image}","--out","{review_output}"]'
+```
+
+本地生成器须真实输出指定的 PNG 文件；审核器须输出 `{"ok":true/false,"issues":[]}` JSON。宿主只有图像工具而没有本地命令时，使用**方式一**；不要谎称 Python 可以直接调用 Agent 私有图片接口。
+
+输出结构：
+
+```text
+/game/jobs/role1/
+├── source/character.png
+├── plan.json
+├── job.json
+├── frames/<状态>/frame_000.png ...
+├── prompts/<状态>/frame_000_attempt_1.txt ...
+├── assets/sprite-sheet.png
+├── assets/manifest.json
+├── assets/qa-report.json
+├── previews/动作预览.html
+└── cocos/
+    ├── sprite-sheet.png
+    ├── actions.json
+    ├── scripts/CharacterActionPlayer.ts
+    └── 使用说明.md
+```
+
+**注意质量门禁：** 纯像素统计、透明度和尺寸检查不等于理解动作。程序可自动拒绝结构错误；角色造型、动作方向和连续性的真正审核需要调用方的视觉模型或人审。未经视觉审核时，`run` 输出明确标记为 `draft`，只能作为草稿，不能冒充可直接发布的游戏资源。Cocos 输出能用于项目资源接入，但尚未在你的具体 Cocos 工程中实机验收。
+
+[完整执行与质量控制说明](references/automated-production-v2.md)。
+
 ## 一张图自动生成多套动作
 
 **默认执行：**用户提供角色设计图并要求生成动作时，AI 先识别角色，再**直接调用当前 Agent 环境已有的图片生成能力**，自动生成关键姿势、中间帧和可预览的动画素材；不必逐个动作重复询问。这是调用方 Agent 负责执行的工作，不需要在本仓库绑定某家图片 API。
@@ -135,6 +195,8 @@ python -m unittest discover -s tests -v
 ke-game-character-action/
 ├── SKILL.md
 ├── README.md
+├── action_factory/          # 2.0 可执行自动生产引擎
+├── pyproject.toml
 ├── LICENSE
 ├── .gitignore
 ├── references/
